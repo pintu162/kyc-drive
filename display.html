@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Data Search</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin-top: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Search Employee by Code</h2>
+    <input type="text" id="searchEmpId" placeholder="Enter Employee Code">
+    <button onclick="searchEmployee()">Search</button>
+
+    <form>
+        <label>ID:</label> <input type="text" id="empId" readonly> <br>
+        <label>Name:</label> <input type="text" id="empName" readonly> <br>
+        <label>Department:</label> <input type="text" id="empDept" readonly> <br>
+        <label>Email:</label> <input type="text" id="empEmail" readonly> <br>
+        <label>Phone:</label> <input type="text" id="empPhone" readonly> <br>
+    </form>
+
+    <a href="homepage.html" class="btn">Home Page</a>
+    <a href="index.html" class="btn">Form Fill Up</a>
+
+    <script>
+        let employeeData = [];
+
+        async function loadCSV() {
+            try {
+                const response = await fetch('http://localhost:5500/employee_data.csv'); // Ensure file exists
+                if (!response.ok) throw new Error("CSV file not found or inaccessible.");
+                const data = await response.text();
+                const rows = data.trim().split("\n").map(row => row.split(",")); 
+
+                employeeData = rows.slice(1); // Remove header row
+            } catch (error) {
+                console.error(error.message);
+            }
+        }
+
+        function searchEmployee() {
+            let empCode = document.getElementById("searchEmpId").value.trim();
+            let result = employeeData.find(row => row[0] === empCode); // Search by Employee ID
+
+            if (result) {
+                document.getElementById("empId").value = result[0];
+                document.getElementById("empName").value = result[1];
+                document.getElementById("empEmail").value = result[2];
+                document.getElementById("empPhone").value = result[3];
+                document.getElementById("empDept").value = result[4];
+            } else {
+                alert("Employee not found! Please check the ID.");
+            }
+        }
+
+        loadCSV();
+    </script>
+</body>
+</html>
